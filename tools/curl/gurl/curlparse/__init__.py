@@ -79,7 +79,7 @@ def curl_trace_reqres_iterator(blocks_iterator):
     meta, req, res = ([],[],[])
     receiving = False
     is_ssl = False
-    
+
     for block in blocks_iterator: 
         if "ssl" in block.item.lower():
             is_ssl = True
@@ -94,6 +94,6 @@ def curl_trace_reqres_iterator(blocks_iterator):
                 meta, req, res = ([],[],[])
                 receiving = False
             req.append(block)
-    
+
     if meta or req or res:
         yield MetaReqRes(meta, req, res, is_ssl)

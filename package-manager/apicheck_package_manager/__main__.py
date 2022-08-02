@@ -31,8 +31,7 @@ def _get_version() -> str:
     with open(init_file, "r") as f:
         content = f.read()
 
-    return re.match(r'(__version__)([\s]+=[\s]+)(\")([\.\d]+)(\")',
-                    content).group(4)
+    return re.match(r'(__version__)([\s]+=[\s]+)(\")([\.\d]+)(\")', content)[4]
 
 
 class CatalogCheckSumError(Exception):
@@ -50,10 +49,7 @@ def check_apicheck_is_in_path() -> bool:
     with open(Path().home().joinpath(rc_file), "r") as rc:
         content = rc.read()
 
-        if "/.apicheck_manager/bin" not in content:
-            return rc_file
-        else:
-            return None
+        return rc_file if "/.apicheck_manager/bin" not in content else None
 
 
 def add_new_alias(rc_file: str, alias: str):
@@ -106,11 +102,7 @@ def get_catalog() -> List[dict] or CatalogCheckSumError:
 def search_in_catalog(catalog: List[dict], tool_name: str) -> dict:
     # Find tool
     tool = None
-    for cat in catalog:
-        if cat["name"] == tool_name:
-            return cat
-    else:
-        return {}
+    return next((cat for cat in catalog if cat["name"] == tool_name), {})
 
 
 def print_table(content: List[Tuple[str, str]],

@@ -87,7 +87,7 @@ def _load_rules(args: argparse.Namespace) -> List[dict]:
         rules.append(env_rules)
 
     if args.rules_file:
-        rules_files = rules_files + args.rules_file
+        rules_files += args.rules_file
 
     for rule_file in rules_files:
         if rule_file.startswith("http"):
@@ -218,9 +218,6 @@ def search_issues(content_json: dict, rules: list, ignores: set) -> List[dict]:
                 f"'{','.join(where_to_find_location)}'"
             )
 
-        #
-        # Collecting data
-        #
         if "Request" in where_to_find:
             if body := content_json["request"].get("body", None):
                 content_to_search["request"] = decode_body(body)
@@ -244,17 +241,15 @@ def search_issues(content_json: dict, rules: list, ignores: set) -> List[dict]:
                 issues.extend(
                     search_in_dict(body_content, rule, where, url)
                 )
-            else:
+            elif regex := re.search(rule["regex"], body_content):
 
-                if regex := re.search(rule["regex"], body_content):
-
-                    issues.append({
-                        "rule": rule["id"],
-                        "where": where,
-                        "url": content_json[where],
-                        "description": rule["description"],
-                        "sensitiveData": regex.group()
-                    })
+                issues.append({
+                    "rule": rule["id"],
+                    "where": where,
+                    "url": content_json[where],
+                    "description": rule["description"],
+                    "sensitiveData": regex.group()
+                })
 
     return issues
 
